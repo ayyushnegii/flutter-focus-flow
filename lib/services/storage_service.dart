@@ -62,4 +62,28 @@ class StorageService {
       'endTime': prefs.getInt('timer_end_time') ?? 0,
     };
   }
+
+  Future<int> getStreak() async {
+    final prefs = await SharedPreferences.getInstance();
+    final history = prefs.getStringList('session_history') ?? [];
+    if (history.isEmpty) return 0;
+    // Parse dates, get unique days, sort descending
+    final dates = history.map((s) {
+      final dt = DateTime.parse(s);
+      return DateTime(dt.year, dt.month, dt.day);
+    }).toSet().toList();
+    dates.sort((a, b) => b.compareTo(a));
+    int streak = 0;
+    DateTime current = DateTime.now();
+    current = DateTime(current.year, current.month, current.day);
+    for (final date in dates) {
+      if (date == current) {
+        streak++;
+        current = current.subtract(const Duration(days: 1));
+      } else if (date.isBefore(current)) {
+        break;
+      }
+    }
+    return streak;
+  }
 }
