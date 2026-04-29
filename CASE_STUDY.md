@@ -36,7 +36,7 @@ lib/
     └── stats_screen.dart  # Focus metrics dashboard
 ```
 
-## Final UI Description (Screenshots to be added)
+## Final UI Description (Screenshots to be added when run)
 1. **Timer Screen**: Large circular timer with neon progress ring, phase labels (WORK/SHORT BREAK/LONG BREAK), play/pause/reset controls, pomodoro count badge.
 2. **Tasks Screen**: Dark input field with neon add button, dismissible task cards with checkbox toggles, line-through styling for completed tasks.
 3. **Stats Screen**: Neon-accented stat cards showing total pomodoros, completed tasks, focus minutes, and daily streak tips.
