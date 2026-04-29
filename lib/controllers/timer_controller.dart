@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../services/achievement_service.dart';
 
 enum TimerPhase { work, shortBreak, longBreak }
@@ -193,9 +194,34 @@ class TimerController extends ChangeNotifier {
     return '$mins:$secs';
   }
 
+  // Ambient sound support
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  final sounds = {
+    'None': null,
+    'Lofi Hip Hop': 'https://stream.zeno.fm/0r0xa792kwzuv',
+    'Rain Sounds': 'https://stream.zeno.fm/f3wvbbqmd44uv',
+    'Cafe Ambience': 'https://stream.zeno.fm/v3fyrtb8kzeuv',
+  };
+  String _selectedSound = 'None';
+
+  String get selectedSound => _selectedSound;
+
+  void setSound(String soundName) {
+    _selectedSound = soundName;
+    if (!_isRunning) return;
+    _audioPlayer.stop();
+    final url = sounds[soundName];
+    if (url != null) {
+      _audioPlayer.play(UrlSource(url));
+      _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    }
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 }
