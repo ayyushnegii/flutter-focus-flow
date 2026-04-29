@@ -6,6 +6,7 @@ import 'screens/timer_screen.dart';
 import 'screens/tasks_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/travel_screen.dart';
+import 'screens/achievements_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,7 @@ class MainScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final currentIndex = useState(0);
-    final pages = const [TimerScreen(), TasksScreen(), StatsScreen(), TravelScreen()];
+    final pages = const [TimerScreen(), TasksScreen(), StatsScreen(), TravelScreen(), AchievementsScreen()];
 
     return Scaffold(
       body: pages[currentIndex.value],
@@ -64,6 +65,11 @@ class MainScreen extends HookWidget {
             icon: Icon(Icons.flight_outlined),
             activeIcon: Icon(Icons.flight),
             label: 'Travel',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.emoji_events_outlined),
+            activeIcon: Icon(Icons.emoji_events),
+            label: 'Achievements',
           ),
         ],
       ),
