@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ class StatsScreen extends HookWidget {
     final sessionsLast7Days = useState(0);
     final dailyGoal = useState(4);
     final todaysPomodoros = useState(0);
+    final chartData = useState<List<int>>([]);
 
     Future<void> loadStats() async {
       final prefs = await SharedPreferences.getInstance();
@@ -23,7 +25,6 @@ class StatsScreen extends HookWidget {
       focusMinutes.value = pomodoros.value * 25;
       dailyGoal.value = prefs.getInt('daily_goal') ?? 4;
 
-      // Calculate sessions in last 7 days
       final history = prefs.getStringList('session_history') ?? [];
       final now = DateTime.now();
       final sevenDaysAgo = now.subtract(const Duration(days: 7));
@@ -32,13 +33,26 @@ class StatsScreen extends HookWidget {
         return date.isAfter(sevenDaysAgo);
       }).length;
 
-      // Calculate today's pomodoros
       final today = DateTime(now.year, now.month, now.day);
       todaysPomodoros.value = history.where((dateStr) {
         final date = DateTime.parse(dateStr);
         final d = DateTime(date.year, date.month, date.day);
         return d == today;
       }).length;
+
+      // Prepare chart data (last 7 days)
+      List<int> data = [];
+      for (int i = 6; i >= 0; i--) {
+        final day = now.subtract(Duration(days: i));
+        final dayStart = DateTime(day.year, day.month, day.day);
+        final count = history.where((dateStr) {
+          final date = DateTime.parse(dateStr);
+          final d = DateTime(date.year, date.month, date.day);
+          return d == dayStart;
+        }).length;
+        data.add(count);
+      }
+      chartData.value = data;
     }
 
     useEffect(() {
@@ -95,7 +109,6 @@ class StatsScreen extends HookWidget {
         );
         return;
       }
-      // Generate CSV
       String csv = 'Date,Time,Duration (min)\n';
       for (final session in history) {
         final dt = DateTime.parse(session);
@@ -131,7 +144,6 @@ class StatsScreen extends HookWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                // Copy to clipboard - simplified for now
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('CSV copied to clipboard (simulated)')),
                 );
@@ -155,6 +167,7 @@ class StatsScreen extends HookWidget {
           ),
         ],
       ),
+      body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
@@ -205,6 +218,52 @@ class StatsScreen extends HookWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Simple Chart (last 7 days)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.darkGrey,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Focus Sessions (Last 7 Days)', style: TextStyle(color: AppTheme.neonCyan, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 150,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(7, (index) {
+                      final value = chartData.value.length > index ? chartData.value[index] : 0;
+                      final maxVal = 10; // Assume max 10 per day for visualization
+                      final height = value / maxVal * 100;
+                      final dayName = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][(DateTime.now().weekday - 7 + index) % 7];
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('$value', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                          const SizedBox(height: 4),
+                          Container(
+                            width: 30,
+                            height: height.clamp(4, 100),
+                            decoration: BoxDecoration(
+                              color: AppTheme.neonCyan,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(dayName, style: const TextStyle(color: AppTheme.grey, fontSize: 10)),
+                        ],
+                      );
+                    }),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
