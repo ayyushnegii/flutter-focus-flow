@@ -86,9 +86,75 @@ class StatsScreen extends HookWidget {
       );
     }
 
+    void exportToCSV() async {
+      final prefs = await SharedPreferences.getInstance();
+      final history = prefs.getStringList('session_history') ?? [];
+      if (history.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No session data to export')),
+        );
+        return;
+      }
+      // Generate CSV
+      String csv = 'Date,Time,Duration (min)\n';
+      for (final session in history) {
+        final dt = DateTime.parse(session);
+        csv += '${dt.year}-${dt.month.toString().padLeft(2,'0')}-${dt.day.toString().padLeft(2,'0')},';
+        csv += '${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')},25\n';
+      }
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppTheme.darkGrey,
+          title: const Text('Export Data', style: TextStyle(color: AppTheme.neonCyan)),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('CSV Data:', style: TextStyle(color: AppTheme.grey)),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  color: AppTheme.deepBlack,
+                  child: Text(
+                    csv,
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'monospace'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close', style: TextStyle(color: AppTheme.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Copy to clipboard - simplified for now
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('CSV copied to clipboard (simulated)')),
+                );
+                Navigator.pop(context);
+              },
+              child: const Text('Copy CSV'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('STATS')),
-      body: ListView(
+      appBar: AppBar(
+        title: const Text('STATS'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download, color: AppTheme.neonCyan),
+            onPressed: exportToCSV,
+            tooltip: 'Export to CSV',
+          ),
+        ],
+      ),
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
