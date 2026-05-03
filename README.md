@@ -1,19 +1,63 @@
-# Flutter Focus Flow
+﻿<div align="center">
 
-A polished, offline-first Flutter mobile app combining Pomodoro timer and task management with a dark neon UI.
+# 🎯 Flutter Focus Flow
 
-[![GitHub](https://img.shields.io/badge/GitHub-ayyushnegii/flutter--focus--flow-cyan)](https://github.com/ayyushnegii/flutter-focus-flow)
+**A minimalist productivity timer for deep work — built with Flutter.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-blue)](https://flutter.dev)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey)](https://flutter.dev)
+
+</div>
+
+---
+
+## Overview
+
+Focus Flow is a distraction-free Pomodoro-style timer app. It helps you enter deep work sessions using timed intervals, with gentle transitions to keep you in a flow state.
 
 ## Features
-- 🎯 Auto-cycling Pomodoro timer (25min work / 5min break / 15min long break)
-- ✅ Swipe-to-delete task management with persistent storage
-- 📊 Focus stats dashboard (pomodoros, minutes, completed tasks)
-- 🌑 Dark neon theme optimized for low-light work sessions
-- 📴 100% offline - no accounts or cloud sync required
 
-## Quick Start
-1. Clone: `git clone https://github.com/ayyushnegii/flutter-focus-flow.git`
-2. Install deps: `flutter pub get`
-3. Run: `flutter run`
+- ⏱️ **Configurable Pomodoro intervals** (work / short break / long break)
+- 🔔 **Native notifications** when a session ends
+- 🌙 **Dark mode** by default
+- 📊 **Session history** — track your daily focus streaks
+- 🎨 **Minimal UI** — no clutter, just your timer
 
-Read the full case study in [CASE_STUDY.md](CASE_STUDY.md)
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Flutter 3 |
+| State | Provider / Riverpod |
+| Local Storage | Hive |
+| Notifications | flutter_local_notifications |
+| Splash | flutter_native_splash |
+
+## Getting Started
+
+```bash
+git clone https://github.com/ayyushnegii/flutter-focus-flow.git
+cd flutter-focus-flow
+flutter pub get
+flutter run
+```
+
+## Project Structure
+
+```
+lib/
+├── main.dart
+├── screens/       # Timer, History, Settings
+├── widgets/       # Reusable UI components
+├── providers/     # State management
+└── models/        # Session data models
+```
+
+## Contributing
+
+PRs welcome. Please open an issue first to discuss major changes.
+
+## License
+
+MIT © [Ayush Negi](https://github.com/ayyushnegii)
